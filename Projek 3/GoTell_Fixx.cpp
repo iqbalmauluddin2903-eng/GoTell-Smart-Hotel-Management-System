@@ -14,7 +14,7 @@
 using namespace std;
 
 // ============================================================
-// CATATAN PERUBAHAN:
+// CATATAN :
 // - MAX_KAMAR, MAX_USER, dst sudah TIDAK dipakai lagi untuk
 //   membatasi array, karena sekarang pakai vector (otomatis
 //   bisa nambah). Tapi MAX_TAMU & MAX_TRANSAKSI tetap dipakai
@@ -117,25 +117,41 @@ string bacaTeks(const string &label, bool wajib = true) {
 // Dipakai untuk KTP dan nomor HP supaya tidak diisi asal-asalan.
 string bacaTeksPanjang(const string &label, int panjangMin, int panjangMax) {
     string s;
+    // [DIUBAH] Kalau panjangMin == panjangMax, tampilkan "(16 digit)" saja,
+    // bukan "(16-16 digit)" yang terlihat aneh.
+    string keterangan = (panjangMin == panjangMax)
+        ? (to_string(panjangMin) + " digit")
+        : (to_string(panjangMin) + "-" + to_string(panjangMax) + " digit");
+
     while (true) {
-        cout << "  " << label << " (" << panjangMin << "-" << panjangMax << " digit): ";
+        cout << "  " << label << " (" << keterangan << "): ";
         getline(cin, s);
         cekEOF();
 
         if ((int) s.length() < panjangMin || (int) s.length() > panjangMax) {
-            cout << MERAH << "  Panjang harus antara " << panjangMin
-                 << " sampai " << panjangMax << " digit!" << RESET << "\n";
+            if (panjangMin == panjangMax) {
+                cout << MERAH << "  Harus tepat " << panjangMin << " digit!" << RESET << "\n";
+            } else {
+                cout << MERAH << "  Panjang harus antara " << panjangMin
+                     << " sampai " << panjangMax << " digit!" << RESET << "\n";
+            }
             continue;
         }
         return s;
     }
 }
 
-// [BARU] Cek apakah semua karakter dalam string adalah angka.
-// Dipakai untuk validasi KTP dan nomor HP (harus angka semua).
+// [DIUBAH] Dulu pakai all_of() + lambda (fitur C++ modern yang agak rumit
+// buat pemula). Sekarang pakai loop biasa: cek satu-satu karakternya,
+// kalau ada yang BUKAN angka (0-9), langsung return false.
 bool semuaAngka(const string &s) {
     if (s.empty()) return false;
-    return all_of(s.begin(), s.end(), [](char c) { return isdigit((unsigned char) c); });
+    for (int i = 0; i < (int) s.length(); i++) {
+        if (s[i] < '0' || s[i] > '9') {
+            return false; // ketemu karakter yang bukan angka
+        }
+    }
+    return true; // semua karakter sudah dicek dan semuanya angka
 }
 
 // [BARU] Baca KTP: harus 16 digit angka (sesuai standar KTP Indonesia).
@@ -324,6 +340,13 @@ double hitungTotalAkhir(double hargaKamar, double totalLayanan) {
 }
 
 // [DIUBAH] Pencarian sekarang pakai vector, caranya tetap sama (loop + bandingkan).
+// CATATAN buat pemula: "for (auto &k : daftarKamar)" artinya
+// "untuk setiap kamar (kita namai k) di dalam daftarKamar, lakukan...".
+// Ini sama saja dengan menulis:
+//   for (int i = 0; i < daftarKamar.size(); i++) { Kamar &k = daftarKamar[i]; ... }
+// tapi lebih singkat dan tidak perlu mikirin index i secara manual.
+// Tanda '&' di depan k berarti k itu "alamat asli" datanya, jadi kalau
+// kita ubah k.status, data di daftarKamar juga ikut berubah.
 Kamar* cariKamar(const string &nomor) {
     for (auto &k : daftarKamar) {
         if (k.nomor == nomor) return &k;
@@ -439,14 +462,31 @@ void inisialisasiLayanan() {
 // setiap kali program ditutup.
 // ============================================================
 
-// Pecah satu baris teks jadi beberapa bagian berdasarkan pemisah '|'
+// [DIUBAH] Dulu pakai stringstream (konsep "aliran data" yang agak abstrak
+// buat pemula). Sekarang pakai cara manual: cari posisi karakter '|' satu
+// per satu pakai find(), lalu potong teksnya pakai substr().
+// Contoh: "101|Standard|Kosong" -> ["101", "Standard", "Kosong"]
 vector<string> pecahBaris(const string &baris, char pemisah = '|') {
     vector<string> hasil;
-    stringstream ss(baris);
-    string bagian;
-    while (getline(ss, bagian, pemisah)) {
+    string sisaTeks = baris;
+
+    while (true) {
+        int posisiPemisah = (int) sisaTeks.find(pemisah);
+
+        if (posisiPemisah == (int) string::npos) {
+            // Tidak ada '|' lagi tersisa -> sisa teks ini adalah bagian terakhir
+            hasil.push_back(sisaTeks);
+            break;
+        }
+
+        // Ambil teks dari awal sampai sebelum tanda '|'
+        string bagian = sisaTeks.substr(0, posisiPemisah);
         hasil.push_back(bagian);
+
+        // Sisa teks yang belum diproses (setelah tanda '|')
+        sisaTeks = sisaTeks.substr(posisiPemisah + 1);
     }
+
     return hasil;
 }
 
