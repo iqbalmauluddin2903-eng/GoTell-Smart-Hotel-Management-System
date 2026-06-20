@@ -1257,7 +1257,7 @@ int main() {
         if (user == nullptr) {
             cout << MERAH << "\n  Gagal login 3 kali. Kembali ke menu awal.\n" << RESET;
             tungguTombol();
-            continue; // [DIUBAH] dulu langsung break, sekarang balik ke menu awal, bukan keluar program
+            continue;
         }
 
         clearScreen();
