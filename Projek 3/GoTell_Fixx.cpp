@@ -1178,6 +1178,13 @@ User* login() {
     return nullptr;
 }
 
+void ketik(const string &teks, int delayMs = 50) {
+    for (char c : teks) {
+        cout << c << flush;
+        this_thread::sleep_for(chrono::milliseconds(delayMs));
+    }
+}
+
 void tampilkanBanner() {
     clearScreen();
     cout << BIRU << TEBAL;
@@ -1219,8 +1226,13 @@ void tampilkanPenutup() {
     cout << "\n";
 
     cout << BIRU << TEBAL;
-    cout << "             Terima kasih telah menggunakan GoTell Hotel.\n";
-    cout << "             Sampai jumpa kembali di sistem berikutnya.\n";
+
+    ketik("          Terima kasih telah menggunakan GoTell Hotel.\n", 50);
+    this_thread::sleep_for(chrono::milliseconds(300));
+
+    ketik("           Sampai jumpa kembali di sistem berikutnya.\n", 50);
+    this_thread::sleep_for(chrono::milliseconds(300));
+
     cout << RESET;
 
     cout << "\n";
