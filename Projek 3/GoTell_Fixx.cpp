@@ -746,14 +746,12 @@ Kamar* bacaKamarKosong() {
 }
 
 // ============================================================
-// [DIUBAH BESAR] prosesCheckIn()
-// Urutan validasi sekarang:
+// prosesCheckIn(), Urutan validasi :
 //   1. Cek dulu apakah kapasitas tamu & transaksi masih cukup
 //      (SEBELUM data apapun diubah / ditambah).
 //   2. Baru tampilkan kamar tersedia & minta input.
 //   3. KTP & HP sekarang pakai validasi format (bacaKTP, bacaNoHP).
-// Dengan urutan ini, tidak akan ada lagi kasus "tamu baru sudah
-// kebuat tapi transaksinya gagal karena kapasitas penuh".
+// tidak akan ada lagi kasus "tamu baru sudah kebuat tapi transaksinya gagal karena kapasitas penuh".
 // ============================================================
 void prosesCheckIn() {
     clearScreen();
@@ -1229,7 +1227,7 @@ void tampilkanPenutup() {
     cout << BIRU << TEBAL;
     ketik("          Terima kasih telah menggunakan GoTell Hotel.\n", 50);
     this_thread::sleep_for(chrono::milliseconds(300));
-    ketik("           Sampai jumpa kembali di sistem berikutnya.\n", 50);
+    ketik("                 Semoga harimu menyenangkan. . .\n", 50);
     this_thread::sleep_for(chrono::milliseconds(300));
     cout << RESET;
 
