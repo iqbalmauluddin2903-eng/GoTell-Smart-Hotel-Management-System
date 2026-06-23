@@ -477,6 +477,154 @@ Pembagian tugas berikut disesuaikan dengan fungsi yang benar-benar ada pada kode
 
 > Saran kerja tim: setiap anggota dapat membuat branch sesuai modulnya, misalnya `feature/resepsionis`, `feature/housekeeping`, `feature/manager`, lalu digabungkan ke branch utama setelah direview.
 
+### 📂 Struktur File per Anggota
+
+Berikut ringkasan file/modul yang dikerjakan masing-masing anggota beserta daftar fungsi lengkapnya:
+
+#### 🟦 File 1 — Iqbal (Core System & Data Model)
+> Pondasi utama program: struct, vector, konstanta global, data global, dan inisialisasi awal.
+
+**Konstanta & Data Global:**
+```cpp
+const int SOFT_LIMIT_TAMU      = 500;
+const int SOFT_LIMIT_TRANSAKSI = 1000;
+const double PAJAK             = 0.11;
+const double SERVICE_CHARGE    = 0.05;
+
+vector<Kamar>     daftarKamar;
+vector<User>      daftarUser;
+vector<Tamu>      daftarTamu;
+vector<Layanan>   daftarLayanan;
+vector<Transaksi> daftarTransaksi;
+int idBerjalan = 1;
+```
+
+**Struct yang didefinisikan:** `Kamar`, `Tamu`, `Layanan`, `Transaksi`, `User`
+
+**Fungsi:** `inisialisasiDataAwal()`, `menuAwal()`, `main()`
+
+---
+
+#### 🟩 File 2 — Zhyla (Input Validation & Utility)
+> Seluruh fungsi validasi input dan utilitas format.
+
+| Fungsi | Keterangan |
+|--------|------------|
+| `cekEOF()` | Mendeteksi input tidak normal / EOF |
+| `trimTeks(s)` | Menghapus spasi di awal dan akhir string |
+| `bacaTeks(label, wajib)` | Membaca input teks dengan validasi wajib isi |
+| `bacaTeksPanjang(label, min, max)` | Membaca teks dengan batas panjang karakter |
+| `semuaAngka(s)` | Mengecek apakah string hanya berisi angka |
+| `bacaKTP(label)` | Membaca dan memvalidasi KTP 16 digit |
+| `namaValid(s)` | Mengecek apakah nama hanya huruf dan spasi |
+| `bacaNamaTamu(label)` | Membaca nama tamu dengan validasi |
+| `formatHPValid(s)` | Mengecek format nomor HP (diawali `08`/`62`, 9–13 digit) |
+| `bacaNoHP(label)` | Membaca nomor HP dengan validasi |
+| `bacaAngka(label, min, max)` | Membaca angka integer dalam rentang tertentu |
+| `formatRupiah(angka)` | Mengubah angka menjadi format `Rp xxx.xxx` |
+| `tanggalSekarang()` | Mengembalikan tanggal hari ini sebagai string |
+| `buatID(prefix)` | Membuat ID transaksi unik dengan prefix tertentu |
+
+---
+
+#### 🟨 File 3 — Adji (UI Console & Navigasi Interaktif)
+> Semua fungsi tampilan, navigasi menu, dan animasi.
+
+| Fungsi | Keterangan |
+|--------|------------|
+| `clearScreen()` | Membersihkan layar console |
+| `tampilkanBanner()` | Menampilkan banner ASCII art GoTell |
+| `judul(teks)` | Menampilkan judul seksi dengan border |
+| `garis(panjang, isi)` | Menampilkan garis pemisah |
+| `bacaTombolArah()` | Membaca input tombol panah dan Enter |
+| `kotakMenu(teks, aktif, lebarKotak)` | Menggambar satu item menu berbentuk kotak |
+| `hitungLebarKotak(opsi[], jumlahOpsi)` | Menghitung lebar kotak menu otomatis |
+| `pilihMenuKotak(judulMenu, opsi[], jumlahOpsi)` | Menjalankan menu interaktif dengan tombol panah |
+| `tungguTombol()` | Menunggu pengguna menekan sembarang tombol |
+| `animasiLoading(pesan, langkah)` | Menampilkan animasi loading dengan teks |
+| `tampilkanPenutup()` | Menampilkan banner penutup saat program selesai |
+
+---
+
+#### 🟪 File 4 — Nurra (Data Master & Pencarian Pointer)
+> Inisialisasi data default dan fungsi pencarian berbasis pointer.
+
+| Fungsi | Keterangan |
+|--------|------------|
+| `tambahKamar(...)` | Menambahkan satu data kamar ke `daftarKamar` |
+| `inisialisasiKamarDefault()` | Mengisi 14 kamar default ke vector |
+| `tambahKamarDefaultJikaBelumAda()` | Menambahkan kamar default yang belum ada |
+| `pastikanKamarDefaultLengkap()` | Memastikan semua kamar default tersedia |
+| `tambahUser(...)` | Menambahkan satu akun user ke `daftarUser` |
+| `inisialisasiUser()` | Mengisi 5 akun default ke vector |
+| `tambahLayanan(...)` | Menambahkan satu layanan ke `daftarLayanan` |
+| `inisialisasiLayanan()` | Mengisi 10 layanan default ke vector |
+| `cariKamar(nomor)` | Mencari kamar berdasarkan nomor, return pointer |
+| `cariUser(username)` | Mencari user berdasarkan username, return pointer |
+| `cariTamuByKTP(ktp)` | Mencari tamu berdasarkan KTP, return pointer |
+| `cariLayanan(id)` | Mencari layanan berdasarkan ID, return pointer |
+| `cariTransaksiAktif(nomorKamar)` | Mencari transaksi aktif berdasarkan nomor kamar, return pointer |
+| `ambilOrTambahTamu(nama, ktp, telp)` | Mengambil data tamu yang sudah ada atau menambahkan baru |
+
+---
+
+#### 🟥 File 5 — Wira (Resepsionis & Transaksi)
+> Seluruh alur check-in, check-out, layanan, struk, dan QRIS.
+
+| Fungsi | Keterangan |
+|--------|------------|
+| `hitungTotalAkhir(hargaKamar, totalLayanan)` | Menghitung grand total dengan pajak dan service charge |
+| `bacaKamarKosong()` | Membaca input nomor kamar yang berstatus `Kosong` |
+| `prosesCheckIn()` | Menjalankan alur check-in lengkap |
+| `prosesTambahLayanan()` | Menambahkan layanan ke transaksi aktif |
+| `pilihMetodeBayar(t)` | Menampilkan pilihan metode pembayaran |
+| `prosesCheckOut()` | Menjalankan alur check-out lengkap |
+| `tampilkanKamarTersedia()` | Menampilkan daftar kamar berstatus `Kosong` |
+| `tampilkanLayanan()` | Menampilkan daftar layanan yang tersedia |
+| `tampilkanTransaksiAktif()` | Menampilkan semua transaksi berstatus aktif |
+| `cetakStruk(t)` | Mencetak struk transaksi ke console |
+| `tampilkanLogoQRIS()` | Menampilkan logo teks QRIS |
+| `tampilkanDataQRIS(t)` | Menampilkan detail pembayaran pada tampilan QRIS |
+| `tampilkanQRISSimbol()` | Menampilkan simulasi kode QR menggunakan simbol |
+| `tampilkanHeaderQRIS(t)` | Menampilkan header nota QRIS |
+| `menuResepsionis(user)` | Menjalankan menu utama Resepsionis |
+
+---
+
+#### 🟦 File 6 — Sultan (Housekeeping & Status Kamar)
+> Pengelolaan status kamar oleh tim housekeeping.
+
+| Fungsi | Keterangan |
+|--------|------------|
+| `warnaStatusKamar(status)` | Mengembalikan kode warna ANSI sesuai status kamar |
+| `tampilkanSemuaKamar()` | Menampilkan seluruh kamar beserta statusnya |
+| `prosesBersihkanKamar()` | Mengubah kamar dari `Dibersihkan` menjadi `Kosong` |
+| `prosesSetMaintenance()` | Mengubah kamar menjadi `Maintenance` |
+| `prosesSelesaiMaintenance()` | Mengubah kamar dari `Maintenance` menjadi `Dibersihkan` |
+| `menuHousekeeping(user)` | Menjalankan menu utama Housekeeping |
+
+---
+
+#### 🟫 File 7 — Isam (Manager, Dashboard & Statistik)
+> Dashboard, laporan pendapatan, statistik okupansi, login, dan `main()`.
+
+| Fungsi | Keterangan |
+|--------|------------|
+| `tampilkanBarOkupansi(persen, lebarBar)` | Menggambar progress bar okupansi kamar |
+| `hitungKamarStatus(status)` | Menghitung jumlah kamar berdasarkan status tertentu |
+| `hitungTransaksiSelesai()` | Menghitung jumlah transaksi berstatus selesai |
+| `hitungPendapatanSelesai()` | Menghitung total pendapatan dari transaksi selesai |
+| `tampilkanDashboard()` | Menampilkan dashboard ringkasan operasional hotel |
+| `tampilkanLaporanPendapatan()` | Menampilkan laporan rincian pendapatan |
+| `tampilkanOkupansi()` | Menampilkan statistik okupansi per tipe kamar |
+| `menuManager(user)` | Menjalankan menu utama Manager |
+| `login()` | Menangani proses autentikasi user (maks. 3 percobaan) |
+| `menuAwal()` | Menampilkan menu awal (Login / Keluar) |
+
+---
+
+> Saran kerja tim: setiap anggota dapat membuat branch sesuai modulnya, misalnya `feature/resepsionis`, `feature/housekeeping`, `feature/manager`, lalu digabungkan ke branch utama setelah direview.
+
 ---
 
 ## 📄 Lisensi
