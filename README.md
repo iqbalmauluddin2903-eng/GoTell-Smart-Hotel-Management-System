@@ -510,8 +510,6 @@ int idBerjalan = 1;
 
 | Fungsi | Keterangan |
 |--------|------------|
-| `cekEOF()` | Mendeteksi input tidak normal / EOF |
-| `trimTeks(s)` | Menghapus spasi di awal dan akhir string |
 | `bacaTeks(label, wajib)` | Membaca input teks dengan validasi wajib isi |
 | `bacaTeksPanjang(label, min, max)` | Membaca teks dengan batas panjang karakter |
 | `semuaAngka(s)` | Mengecek apakah string hanya berisi angka |
