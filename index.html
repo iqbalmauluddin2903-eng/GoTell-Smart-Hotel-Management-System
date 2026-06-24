@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>GoTell — Smart Hotel Management System</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#0a0e1a;--bg2:#0f1526;--card:#131929;--border:#1e2d4a;
+    --accent:#00b4d8;--accent2:#0077b6;--gold:#f4a261;--green:#06d6a0;
+    --red:#ef476f;--purple:#7c3aed;--text:#e2e8f0;--muted:#64748b;
+    --font:'Courier New',monospace;
+  }
+  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',sans-serif;overflow-x:hidden}
+  canvas#particles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+  .wrap{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:0 24px}
+  .hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 24px;overflow:hidden;}
+  .hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(0,180,216,.13) 0%,transparent 70%),radial-gradient(ellipse 60% 40% at 80% 100%,rgba(124,58,237,.10) 0%,transparent 60%);pointer-events:none}
+  .scanline{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,180,216,.015) 2px,rgba(0,180,216,.015) 4px);pointer-events:none}
+  .ascii-banner{font-family:var(--font);font-size:clamp(5px,1.1vw,13px);color:var(--accent);line-height:1.2;white-space:pre;text-shadow:0 0 18px rgba(0,180,216,.5);animation:fadeIn .8s ease}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:none}}
+  .hero-sub{margin-top:20px;font-size:clamp(10px,2vw,15px);letter-spacing:.35em;color:var(--gold);text-transform:uppercase;font-family:var(--font);animation:fadeIn 1s .3s both}
+  .hero-desc{margin-top:16px;max-width:560px;color:var(--muted);font-size:15px;line-height:1.7;animation:fadeIn 1s .5s both}
+  .badges{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:24px;animation:fadeIn 1s .7s both}
+  .badge{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;letter-spacing:.05em;border:1px solid}
+  .badge-blue{background:rgba(0,180,216,.12);border-color:rgba(0,180,216,.4);color:var(--accent)}
+  .badge-gold{background:rgba(244,162,97,.12);border-color:rgba(244,162,97,.4);color:var(--gold)}
+  .badge-green{background:rgba(6,214,160,.12);border-color:rgba(6,214,160,.4);color:var(--green)}
+  .badge-purple{background:rgba(124,58,237,.12);border-color:rgba(124,58,237,.4);color:#a78bfa}
+  .divider{height:2px;margin:0;background:linear-gradient(90deg,transparent,var(--accent),var(--purple),transparent);animation:shimmer 3s linear infinite;background-size:200% 100%}
+  @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+  section{padding:64px 0}
+  .sec-title{font-size:11px;letter-spacing:.2em;color:var(--accent);text-transform:uppercase;font-family:var(--font);margin-bottom:8px}
+  .sec-h2{font-size:26px;font-weight:700;color:var(--text);margin-bottom:32px}
+  .sec-h2 span{color:var(--accent)}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;transition:border-color .2s,transform .2s}
+  .card:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .card-icon{font-size:28px;margin-bottom:12px}
+  .card-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px}
+  .card-desc{font-size:13px;color:var(--muted);line-height:1.6}
+  .tbl-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border)}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{background:#0d1832;color:var(--accent);padding:12px 16px;text-align:left;font-family:var(--font);font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+  td{padding:11px 16px;border-top:1px solid var(--border);color:var(--text)}
+  tr:hover td{background:rgba(0,180,216,.04)}
+  .tag{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:600}
+  .tag-blue{background:rgba(0,180,216,.15);color:var(--accent)}
+  .tag-gold{background:rgba(244,162,97,.15);color:var(--gold)}
+  .tag-green{background:rgba(6,214,160,.15);color:var(--green)}
+  .tag-red{background:rgba(239,71,111,.15);color:var(--red)}
+  .tag-purple{background:rgba(124,58,237,.15);color:#a78bfa}
+  .code{background:#060b14;border:1px solid var(--border);border-radius:10px;padding:20px 24px;font-family:var(--font);font-size:13px;color:#7dd3fc;overflow-x:auto;line-height:1.8;margin:16px 0}
+  .code .c{color:var(--muted)}.code .k{color:#c084fc}.code .s{color:var(--green)}.code .n{color:var(--gold)}
+  .team{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+  .member{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;transition:border-color .2s}
+  .member:hover{border-color:var(--accent)}
+  .avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;margin-bottom:12px;font-family:var(--font)}
+  .member-name{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px}
+  .member-role{font-size:11px;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;line-height:1.5}
+  .flow{display:flex;flex-direction:column;align-items:center;gap:0}
+  .flow-box{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 28px;font-size:13px;color:var(--text);font-family:var(--font);text-align:center;min-width:220px;transition:border-color .2s}
+  .flow-box.accent{border-color:var(--accent);color:var(--accent)}
+  .flow-box.gold{border-color:var(--gold);color:var(--gold)}
+  .flow-box:hover{border-color:var(--accent)}
+  .flow-arrow{color:var(--muted);font-size:20px;line-height:1.2;padding:2px 0}
+  .flow-branch{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+  .flow-branch .flow-box{min-width:150px;font-size:12px}
+  .formula{background:var(--card);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:16px 20px;margin:12px 0;font-family:var(--font);font-size:13px;color:var(--text);line-height:2}
+  .status-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+  .status-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:12px}
+  .status-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+  footer{position:relative;padding:60px 24px 40px;text-align:center;overflow:hidden}
+  .footer-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 80% at 50% 100%,rgba(0,180,216,.1) 0%,transparent 70%),radial-gradient(ellipse 50% 50% at 20% 50%,rgba(124,58,237,.08) 0%,transparent 60%);pointer-events:none}
+  .footer-ascii{font-family:var(--font);font-size:clamp(4px,.9vw,10px);color:var(--accent);white-space:pre;line-height:1.2;text-shadow:0 0 14px rgba(0,180,216,.4);opacity:.8}
+  .footer-tagline{margin-top:16px;color:var(--muted);font-size:13px}
+  .footer-heart{color:var(--red)}
+  ::-webkit-scrollbar{width:6px;height:6px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  ::-webkit-scrollbar-thumb:hover{background:var(--accent2)}
+</style>
+</head>
+<body>
+<canvas id="particles"></canvas>
+
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="scanline"></div>
+  <pre class="ascii-banner">
+       ██████╗  ██████╗ ████████╗███████╗██╗     ██╗
+      ██╔════╝ ██╔═══██╗╚══██╔══╝██╔════╝██║     ██║
+      ██║  ███╗██║   ██║   ██║   █████╗  ██║     ██║
+      ██║   ██║██║   ██║   ██║   ██╔══╝  ██║     ██║
+      ╚██████╔╝╚██████╔╝   ██║   ███████╗███████╗███████╗
+       ╚═════╝  ╚═════╝    ╚═╝   ╚══════╝╚══════╝╚══════╝</pre>
+  <p class="hero-sub">S m a r t &nbsp; H o t e l &nbsp; M a n a g e m e n t &nbsp; S y s t e m</p>
+  <p class="hero-desc">Aplikasi manajemen hotel berbasis <strong>console/CLI</strong> yang dibuat menggunakan <strong>C++</strong> murni. Mensimulasikan operasional hotel nyata dengan tiga role utama.</p>
+  <div class="badges">
+    <span class="badge badge-blue">Language · C++</span>
+    <span class="badge badge-gold">Type · Console App</span>
+    <span class="badge badge-green">Login · Role Based</span>
+    <span class="badge badge-purple">Platform · Windows</span>
+    <span class="badge badge-green">Status · Development</span>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<section><div class="wrap">
+  <p class="sec-title">// fitur_utama</p>
+  <h2 class="sec-h2">Apa yang bisa <span>GoTell</span> lakukan?</h2>
+  <div class="cards">
+    <div class="card"><div class="card-icon">👔</div><div class="card-title">Manager</div><div class="card-desc">Dashboard pendapatan real-time, statistik okupansi per tipe kamar, laporan transaksi, dan monitoring status seluruh kamar hotel.</div></div>
+    <div class="card"><div class="card-icon">🧾</div><div class="card-title">Resepsionis</div><div class="card-desc">Check-in & check-out tamu, tambah layanan ke transaksi aktif, cetak struk, dan simulasi pembayaran Tunai / QRIS.</div></div>
+    <div class="card"><div class="card-icon">🧹</div><div class="card-title">Housekeeping</div><div class="card-desc">Kelola status kamar — selesaikan pembersihan, set maintenance, dan tandai kamar kembali siap pakai.</div></div>
+    <div class="card"><div class="card-icon">🔐</div><div class="card-title">Validasi Input</div><div class="card-desc">Nama hanya huruf & spasi, KTP 16 digit angka, HP diawali 08/62, parsing angka manual tanpa stoi(), maks. 3x login.</div></div>
+    <div class="card"><div class="card-icon">⌨️</div><div class="card-title">Navigasi Interaktif</div><div class="card-desc">Menu kotak dengan navigasi tombol panah atas/bawah + Enter. Animasi loading dan warna ANSI di seluruh tampilan.</div></div>
+    <div class="card"><div class="card-icon">💳</div><div class="card-title">Struk & QRIS</div><div class="card-desc">Cetak struk transaksi lengkap dengan pajak 11% dan service charge 5%. Simulasi tampilan QRIS berbasis simbol ASCII.</div></div>
+  </div>
+</div></section>
+
+<div class="divider"></div>
+
+<section><div class="wrap">
+  <p class="sec-title">// data_default</p>
+  <h2 class="sec-h2">Kamar, Akun & <span>Layanan</span></h2>
+  <p style="color:var(--muted);font-size:13px;margin-bottom:16px">🛏️ 14 Kamar Default</p>
+  <div class="tbl-wrap" style="margin-bottom:32px">
+    <table>
+      <thead><tr><th>Nomor</th><th>Tipe</th><th>Lantai</th><th>Kapasitas</th><th>Harga/Malam</th></tr></thead>
+      <tbody>
+        <tr><td>101–105</td><td><span class="tag tag-blue">Standard</span></td><td>1</td><td>2–3 orang</td><td>Rp 450.000 – 550.000</td></tr>
+        <tr><td>201–204</td><td><span class="tag tag-green">Deluxe</span></td><td>2</td><td>2–3 orang</td><td>Rp 750.000 – 950.000</td></tr>
+        <tr><td>301–303</td><td><span class="tag tag-gold">Suite</span></td><td>3</td><td>2–4 orang</td><td>Rp 1.500.000 – 1.800.000</td></tr>
+        <tr><td>401–402</td><td><span class="tag tag-purple">Presidential</span></td><td>4</td><td>4–6 orang</td><td>Rp 4.500.000 – 5.000.000</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="color:var(--muted);font-size:13px;margin-bottom:16px">👤 5 Akun Default</p>
+  <div class="tbl-wrap" style="margin-bottom:32px">
+    <table>
+      <thead><tr><th>Username</th><th>Password</th><th>Nama</th><th>Role</th></tr></thead>
+      <tbody>
+        <tr><td><code style="color:var(--accent)">manager</code></td><td><code style="color:var(--muted)">manager123</code></td><td>Iqbal ganteng</td><td><span class="tag tag-gold">Manager</span></td></tr>
+        <tr><td><code style="color:var(--accent)">resep1</code></td><td><code style="color:var(--muted)">resep123</code></td><td>Adji</td><td><span class="tag tag-blue">Resepsionis</span></td></tr>
+        <tr><td><code style="color:var(--accent)">resep2</code></td><td><code style="color:var(--muted)">resep456</code></td><td>zhyla</td><td><span class="tag tag-blue">Resepsionis</span></td></tr>
+        <tr><td><code style="color:var(--accent)">hk1</code></td><td><code style="color:var(--muted)">hk123</code></td><td>Nurra</td><td><span class="tag tag-green">Housekeeping</span></td></tr>
+        <tr><td><code style="color:var(--accent)">hk2</code></td><td><code style="color:var(--muted)">hk456</code></td><td>Wira</td><td><span class="tag tag-green">Housekeeping</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="color:var(--muted);font-size:13px;margin-bottom:16px">🛎️ 10 Layanan Default</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>ID</th><th>Nama Layanan</th><th>Harga</th></tr></thead>
+      <tbody>
+        <tr><td><span class="tag tag-gold">FB-01</span></td><td>Sarapan Pagi (Buffet)</td><td>Rp 85.000</td></tr>
+        <tr><td><span class="tag tag-gold">FB-02</span></td><td>Room Service 24 Jam</td><td>Rp 50.000</td></tr>
+        <tr><td><span class="tag tag-gold">FB-03</span></td><td>Makan Malam Romantis</td><td>Rp 350.000</td></tr>
+        <tr><td><span class="tag tag-green">SP-01</span></td><td>Pijat Tradisional</td><td>Rp 250.000</td></tr>
+        <tr><td><span class="tag tag-green">SP-02</span></td><td>Spa Pasangan</td><td>Rp 750.000</td></tr>
+        <tr><td><span class="tag tag-blue">LN-01</span></td><td>Laundry Express</td><td>Rp 50.000</td></tr>
+        <tr><td><span class="tag tag-blue">TR-01</span></td><td>Antar Jemput Bandara</td><td>Rp 200.000</td></tr>
+        <tr><td><span class="tag tag-blue">TR-02</span></td><td>City Tour Setengah Hari</td><td>Rp 350.000</td></tr>
+        <tr><td><span class="tag tag-purple">EN-01</span></td><td>Karaoke 1 Jam</td><td>Rp 150.000</td></tr>
+        <tr><td><span class="tag tag-purple">BS-01</span></td><td>Sewa Meeting Room</td><td>Rp 500.000</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div></section>
+
+<div class="divider"></div>
+
+<section><div class="wrap">
+  <p class="sec-title">// status_kamar</p>
+  <h2 class="sec-h2">5 Status <span>Kamar</span></h2>
+  <div class="status-list">
+    <div class="status-item"><div class="status-dot" style="background:#06d6a0"></div><div><strong style="color:#06d6a0">Kosong</strong><br/><span style="font-size:12px;color:var(--muted)">Tersedia untuk check-in</span></div></div>
+    <div class="status-item"><div class="status-dot" style="background:#ef476f"></div><div><strong style="color:#ef476f">Terisi</strong><br/><span style="font-size:12px;color:var(--muted)">Sedang ditempati tamu</span></div></div>
+    <div class="status-item"><div class="status-dot" style="background:#f4a261"></div><div><strong style="color:#f4a261">Dipesan</strong><br/><span style="font-size:12px;color:var(--muted)">Disiapkan, belum ada fitur</span></div></div>
+    <div class="status-item"><div class="status-dot" style="background:#00b4d8"></div><div><strong style="color:#00b4d8">Dibersihkan</strong><br/><span style="font-size:12px;color:var(--muted)">Menunggu housekeeping</span></div></div>
+    <div class="status-item"><div class="status-dot" style="background:#a78bfa"></div><div><strong style="color:#a78bfa">Maintenance</strong><br/><span style="font-size:12px;color:var(--muted)">Sedang diperbaiki</span></div></div>
+  </div>
+</div></section>
+
+<div class="divider"></div>
+
+<section><div class="wrap">
+  <p class="sec-title">// alur_program</p>
+  <h2 class="sec-h2">Alur <span>Utama</span></h2>
+  <div class="flow">
+    <div class="flow-box accent">Mulai → inisialisasiDataAwal()</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-box">menuAwal() → Login / Keluar</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-box">login() → maks. 3 percobaan</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-branch">
+      <div class="flow-box gold">menuManager()</div>
+      <div class="flow-box accent">menuResepsionis()</div>
+      <div class="flow-box" style="border-color:#06d6a0;color:#06d6a0">menuHousekeeping()</div>
+    </div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-box">Logout → kembali ke menuAwal()</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-box accent">tampilkanPenutup() → Selesai</div>
+  </div>
+</div></section>
+
+<div class="divider"></div>
+
+<section><div class="wrap">
+  <p class="sec-title">// rumus_perhitungan</p>
+  <h2 class="sec-h2">Perhitungan <span>Harga</span></h2>
+  <div class="formula">
+    biaya_kamar  = harga/malam × lama_menginap<br/>
+    subtotal     = biaya_kamar + total_layanan<br/>
+    pajak        = subtotal × <span style="color:var(--gold)">0.11</span>  <span style="color:var(--muted)">// 11%</span><br/>
+    service      = subtotal × <span style="color:var(--gold)">0.05</span>  <span style="color:var(--muted)">// 5%</span><br/>
+    grand_total  = subtotal + pajak + service
+  </div>
+  <div class="code">
+    <span class="k">const</span> <span class="k">double</span> <span class="n">PAJAK</span>          = <span class="s">0.11</span>;<br/>
+    <span class="k">const</span> <span class="k">double</span> <span class="n">SERVICE_CHARGE</span> = <span class="s">0.05</span>;
+  </div>
+</div></section>
+
+<div class="divider"></div>
+
+<section><div class="wrap">
+  <p class="sec-title">// cara_menjalankan</p>
+  <h2 class="sec-h2">Compile & <span>Run</span></h2>
+  <div class="code">
+    <span class="c"># Compile dengan MinGW/g++</span><br/>
+    g++ -std=c++17 GoTell.cpp -o GoTell.exe<br/><br/>
+    <span class="c"># Jalankan</span><br/>
+    GoTell.exe
+  </div>
+  <p style="margin-top:12px;font-size:13px;color:var(--muted)">⚠️ Dijalankan di <strong style="color:var(--gold)">Windows</strong> — menggunakan <code style="color:var(--accent)">&lt;conio.h&gt;</code>, <code style="color:var(--accent)">system("cls")</code>, dan <code style="color:var(--accent)">system("chcp 65001")</code>.</p>
+</div></section>
+
+<div class="divider"></div>
+
+<section><div class="wrap">
+  <p class="sec-title">// tim_pengembang</p>
+  <h2 class="sec-h2">7 Anggota <span>Tim</span></h2>
+  <div class="team">
+    <div class="member"><div class="avatar" style="background:rgba(0,180,216,.15);color:var(--accent)">IQ</div><div class="member-name">Iqbal</div><div class="member-role">Core System &amp; Data Model<br/>struct · array · main()</div></div>
+    <div class="member"><div class="avatar" style="background:rgba(6,214,160,.15);color:var(--green)">ZH</div><div class="member-name">Zhyla</div><div class="member-role">Input Validation &amp; Utility<br/>KTP · HP · formatRupiah()</div></div>
+    <div class="member"><div class="avatar" style="background:rgba(244,162,97,.15);color:var(--gold)">AD</div><div class="member-name">Adji</div><div class="member-role">UI Console &amp; Navigasi<br/>banner · kotakMenu() · loading</div></div>
+    <div class="member"><div class="avatar" style="background:rgba(124,58,237,.15);color:#a78bfa">NU</div><div class="member-name">Nurra</div><div class="member-role">Data Master &amp; Pencarian<br/>cariKamar() · pointer</div></div>
+    <div class="member"><div class="avatar" style="background:rgba(239,71,111,.15);color:var(--red)">WI</div><div class="member-name">Wira</div><div class="member-role">Resepsionis &amp; Transaksi<br/>checkIn · checkOut · QRIS</div></div>
+    <div class="member"><div class="avatar" style="background:rgba(0,180,216,.15);color:var(--accent)">SU</div><div class="member-name">Sultan</div><div class="member-role">Housekeeping &amp; Status<br/>bersihkan · maintenance</div></div>
+    <div class="member"><div class="avatar" style="background:rgba(6,214,160,.15);color:var(--green)">IS</div><div class="member-name">Isam</div><div class="member-role">Manager &amp; Dashboard<br/>dashboard · laporan · login()</div></div>
+  </div>
+</div></section>
+
+<div class="divider"></div>
+
+<footer>
+  <div class="footer-bg"></div>
+  <pre class="footer-ascii">
+   ██████╗  ██████╗  ██████╗ ██████╗     ██████╗ ██╗   ██╗███████╗
+  ██╔════╝ ██╔═══██╗██╔═══██╗██╔══██╗    ██╔══██╗╚██╗ ██╔╝██╔════╝
+  ██║  ███╗██║   ██║██║   ██║██║  ██║    ██████╔╝ ╚████╔╝ █████╗
+  ██║   ██║██║   ██║██║   ██║██║  ██║    ██╔══██╗  ╚██╔╝  ██╔══╝
+  ╚██████╔╝╚██████╔╝╚██████╔╝██████╔╝    ██████╔╝   ██║   ███████╗
+   ╚═════╝  ╚═════╝  ╚═════╝ ╚═════╝     ╚═════╝    ╚═╝   ╚══════╝</pre>
+  <p class="footer-tagline">GoTell : Smart Hotel Management System &nbsp;·&nbsp; Made with <span class="footer-heart">❤</span> using C++</p>
+  <p style="margin-top:8px;font-size:11px;color:var(--muted)">Dibuat untuk keperluan tugas dan pembelajaran · Bebas digunakan untuk edukasi</p>
+</footer>
+
+<script>
+const canvas=document.getElementById('particles');
+const ctx=canvas.getContext('2d');
+let W,H,pts;
+function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight}
+function init(){
+  resize();
+  const count=Math.floor((W*H)/14000);
+  pts=Array.from({length:count},()=>({
+    x:Math.random()*W,y:Math.random()*H,
+    vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,
+    r:Math.random()*1.4+.4,a:Math.random()*.5+.15,
+    c:Math.random()<.6?'0,180,216':Math.random()<.5?'124,58,237':'6,214,160'
+  }));
+}
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  for(let i=0;i<pts.length;i++){
+    const p=pts[i];
+    p.x+=p.vx;p.y+=p.vy;
+    if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle=`rgba(${p.c},${p.a})`;ctx.fill();
+    for(let j=i+1;j<pts.length;j++){
+      const q=pts[j];const dx=p.x-q.x,dy=p.y-q.y;const d=dx*dx+dy*dy;
+      if(d<14000){
+        const alpha=(1-d/14000)*.12;
+        ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);
+        ctx.strokeStyle=`rgba(0,180,216,${alpha})`;ctx.lineWidth=.4;ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(draw);
+}
+window.addEventListener('resize',init);init();draw();
+</script>
+</body>
+</html>
