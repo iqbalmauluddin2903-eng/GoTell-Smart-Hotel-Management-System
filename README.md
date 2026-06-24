@@ -1,15 +1,8 @@
+# 🏨 GoTell — Smart Hotel Management System
+
 <div align="center">
 
-```
-  ██████╗  ██████╗ ████████╗███████╗██╗     ██╗
- ██╔════╝ ██╔═══██╗╚══██╔══╝██╔════╝██║     ██║
- ██║  ███╗██║   ██║   ██║   █████╗  ██║     ██║
- ██║   ██║██║   ██║   ██║   ██╔══╝  ██║     ██║
-      ╚██████╔╝╚██████╔╝   ██║   ███████╗███████╗███████╗
-       ╚═════╝  ╚═════╝    ╚═╝   ╚══════╝╚══════╝╚══════╝
-```
-
-### 🏨 Smart Hotel Management System
+<img src="assets/gotell-banner.svg" alt="GoTell Smart Hotel Management System Banner" width="100%"/>
 
 <br/>
 
